@@ -33,6 +33,7 @@ def DotProduct(a, b):
     else:
         raise ValueError(f'Vectors must be same length ({len(a)} and {len(b)}) are not equal.')
 
+
 def MatrixSum(A, B):
     rows = len(A)
     cols = len(A[0])
@@ -53,6 +54,7 @@ def MatrixMultiplyVector(W, x):
     for n in range(Wrows):
         Z[n] = DotProduct(W[n], x)
     return Z
+
 
 def VectorMultiplyMatrix(x, W):
     """
@@ -104,8 +106,8 @@ def Submatrix(A, i, j):
     m = [r[:j] + r[j+1:] for r in (A[:i] + A[i+1:])]
     return m
 
+
 def Determinant(A):
-    
     if len(A) == 1:
         return A[0][0]
 
@@ -117,6 +119,7 @@ def Determinant(A):
         determinant += ((-1)**c) * A[0][c] * Determinant(Submatrix(A, 0, c))
 
     return determinant
+
 
 def Cofactor(A):
     Arows = len(A)
@@ -133,11 +136,6 @@ def Cofactor(A):
 def Inverse(A):
     determinant = Determinant(A)
     adjugate = Transpose(Cofactor(A))
-    # print(determinant, adjugate)
-    # inverse = [[None for c in range(len(A[0]))] for r in range(len(A))]
-    # for r in range(len(A)):
-    #     for c in range(len(A[0])):
-    #         inverse[r][c] = adjugate[r][c]/determinant
     inverse = ScalarMultiplyMatrix((1/determinant), adjugate)
     return inverse
 
@@ -150,8 +148,8 @@ def ScalarMultiplyMatrix(s, A):
 
     return B
 
+
 def CalculateWeights(X, y):
-    # (XTX)-1Xty
     XT = Transpose(X)
     XTX = MatrixMultiply(XT, X)
     XTX_inverse = Inverse(XTX)
@@ -199,27 +197,42 @@ def addConstant(A):
 
     return Anew
 
-def IdentityMatrix(n):
-    In = [[1 if c==r else 0 for c in range(n)] for r in range(n)]
 
+def IdentityMatrix(n):
+    In = [[1 if c == r else 0 for c in range(n)] for r in range(n)]
     return In
 
 
-a = [1, 2, 3]
-b = [1, 2, 3]
-c = [1,1]
-W = [[1,-1,2],
-     [0,-3,1]]
-x = [2, 1, 0]
-A = [[0, 4, -2],[-4, -3, 0]]
-B = [[0, 1], [1, -1], [2, 3]]
-A = [[1,2,3],[4,5,6]]
-B = [[1,2],[3,4],[5,6]]
-AA = [[1,2,3],[4,5,6],[7,8,9],[10,11,12]]
-AAA = [[1,2,3],[4,5,6],[7,8,9]]
+def addPowers(A, degrees=2):
+    Arows = len(A)
+    Acols = len(A[0])
+    Anew = [[None for c in range(Acols * degrees)] for r in range(Arows)]
+    if degrees >= 1:
+        for i in range(Arows):
+            for j in range(Acols):
+                Anew[i][j] = A[i][j]
+                for n in range(2, degrees+1):
+                    print(i, j, A[i][j], n, j + (Acols * (n - 1)), A[i][j] ** n)
+                    Anew[i][j+(Acols*(n-1))] = A[i][j] ** n
+
+        return Anew
+    return A
 
 
-x = [-2,1,0]
+# a = [1, 2, 3]
+# b = [1, 2, 3]
+# c = [1,1]
+# W = [[1,-1,2],
+#      [0,-3,1]]
+# x = [2, 1, 0]
+# A = [[0, 4, -2],[-4, -3, 0]]
+# B = [[0, 1], [1, -1], [2, 3]]
+# A = [[1,2,3],[4,5,6]]
+# B = [[1,2],[3,4],[5,6]]
+# AA = [[1,2,3],[4,5,6],[7,8,9],[10,11,12]]
+# AAA = [[1,2,3],[4,5,6],[7,8,9]]
+
+# x = [-2,1,0]
 # print(VectorSum(a, b))
 # print(VectorDifference(a, b))
 # print(DotProduct(a, b))
@@ -234,22 +247,22 @@ x = [-2,1,0]
 # print(Determinant([[1,2,3,4],[5,6,7,8],[9,1,2,3],[4,5,6,7]]))
 # print(Cofactor([[9, 9, 0], [1,2,3],[4,5,6]]))
 # print(Inverse([[9, 9, 0], [1,2,3],[4,5,6]]))
-X = [[2,4],[10,11],[12,11],[1,1]]
-y = [[4.4],[-89.9], [-118.9],[9.6]]
-#print(f"Weights: {CalculateWeights(X, y)}")
-Xc = addConstant(X)
-#print(f"Weights with const {CalculateWeights(Xc, y)}")
-#print(IdentityMatrix(4))
-#print(f"Reg Weights: {CalculateWeightsRegularised(X, y)}")
-#print(f"Reg Weights with const {CalculateWeightsRegularised(Xc, y)}")
+# X = [[2,4],[10,11],[12,11],[1,1]]
+# y = [[4.4],[-89.9], [-118.9],[9.6]]
+# #print(f"Weights: {CalculateWeights(X, y)}")
+# Xc = addConstant(X)
+# print(f"Weights with const {CalculateWeights(Xc, y)}")
+# print(IdentityMatrix(4))
+# print(f"Reg Weights: {CalculateWeightsRegularised(X, y)}")
+# print(f"Reg Weights with const {CalculateWeightsRegularised(Xc, y)}")
 
+# A = [[2,4],[10,11],[12,11]]
+# B = [[4.4],[-89.9],[-118.9]]
+# Ac = addConstant(A)
+# weights = CalculateWeights(Ac, B)
+# weights_reg = CalculateWeightsRegularised(Ac, B, g=0.001)
+# print(MatrixMultiply(Ac, weights))
+# print(MatrixMultiply(Ac, weights_reg))
 
-
-A = [[2,4],[10,11],[12,11]]
-B = [[4.4],[-89.9],[-118.9]]
-Ac = addConstant(A)
-weights = CalculateWeights(Ac, B)
-weights_reg = CalculateWeightsRegularised(Ac, B, g=0.001)
-print(MatrixMultiply(Ac, weights))
-print(MatrixMultiply(Ac, weights_reg))
-
+A = [[1, 2, 3], [1, 2, 3], [2, 4, 6]]
+# print(addPowers(A, degrees=3))
